@@ -39,7 +39,7 @@ class PydanticObjectId(ObjectId): #  We need to overwrite ObjectID here to get i
     
 class Cheet(BaseModel):
     # Omar's code
-    id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias="_id") # Auto-set new cheet ID
+    #id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias="_id") # Auto-set new cheet ID
     username: str
     cheet: str
     created_at: datetime = Field(default_factory=datetime.utcnow)  # Auto-set timestamp
@@ -73,22 +73,24 @@ def create_user(user: User):
 
     return {"inserted_id": user_dict["_id"], "user": user_dict}
 
-@app.get("/get_collections") #
-def list_cols():
-    collections = db.list_collection_names()  # List all collections (schemas)
-    return {"collections": collections}   
-
 @app.post("/create_cheet")
 def create_cheet(cheet: Cheet):
     # Check if the email already exists
-    if cheets_collection.find_one({"cheet_ID": cheet.cheet_ID}):
-        raise HTTPException(status_code=400, detail="Cheet shouldn't have the same ID as another one.")
+    #if cheets_collection.find_one({"cheet_ID": cheet.username}):
+    #    raise HTTPException(status_code=400, detail="Cheet shouldn't have the same ID as another one.")
 
     # Convert the Pydantic model to a dictionary and insert it
     cheet_dict = cheet.dict()
     result = cheets_collection.insert_one(cheet_dict)
 
-    return {"inserted_id": str(result.inserted_id), "cheet": cheet_dict}
+    cheet_dict["_id"] = str(result.inserted_id)
+
+    return {"inserted_id": cheet_dict["_id"], "user": cheet_dict}
+
+@app.get("/get_collections") #
+def list_cols():
+    collections = db.list_collection_names()  # List all collections (schemas)
+    return {"collections": collections}
 
 @app.get("/get_users")
 def get_users():
@@ -101,12 +103,6 @@ def get_users():
 
     return {"users": users}
 
-@app.get("/delete_col")
-def delete_col():
-    db.users.drop()
-    return {"message": "collection dropped"}
-
-
 @app.get("/get_cheets")
 def get_cheets():
     # Fetch all users from the collection
@@ -116,4 +112,9 @@ def get_cheets():
     for cheet in cheets:
         cheet["_id"] = str(cheet["_id"])
 
-    return {"cheet": cheet.cheet}
+    return {"cheet": cheets}
+
+@app.get("/delete_col")
+def delete_col():
+    db.users.drop()
+    return {"message": "collection dropped"}
