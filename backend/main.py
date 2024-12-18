@@ -44,6 +44,18 @@ class Cheet(BaseModel):
     cheet: str
     created_at: datetime = Field(default_factory=datetime.utcnow)  # Auto-set timestamp
 
+@app.api_route("/create_users_col", methods=["GET", "POST"])
+def create_users_collection():
+    if "users" not in db.list_collection_names():
+        db.users.insert_one({"placeholder": True})
+    return {"message": "users collection created"}
+
+@app.api_route("/create_cheets_col", methods = ["GET", "POST"])
+def create_cheets_col():
+    if "cheets" not in db.list_collection_names():
+        db.cheets.insert_one({"placeholder": True})
+    return {"message": "cheets collection created"}
+
 @app.post("/create_user")
 def create_user(user: User):
     # Check if the email already exists
@@ -56,13 +68,8 @@ def create_user(user: User):
 
     return {"inserted_id": str(result.inserted_id), "user": user_dict}
 
-# @app.post("/list_users")
-# def list_users(user: User):
-    # if users_collection.find_one("email": user.email)
-
-
-@app.get("/mongodb") #
-def list_schemas():
+@app.get("/list_collections") #
+def list_cols():
     collections = db.list_collection_names()  # List all collections (schemas)
     return {"collections": collections}   
 
@@ -77,3 +84,19 @@ def create_cheet(cheet: Cheet):
     result = cheets_collection.insert_one(cheet_dict)
 
     return {"inserted_id": str(result.inserted_id), "cheet": cheet_dict}
+
+@app.get("/get_users")
+def get_users():
+    # Fetch all users from the collection
+    users = list(users_collection.find())
+
+    # Convert ObjectId to string for JSON serialization
+    for user in users:
+        user["_id"] = str(user["_id"])
+
+    return {"users": users}
+
+@app.get("/delete_col")
+def delete_col():
+    db.users.drop()
+    return {"message": "collection dropped"}
