@@ -62,13 +62,18 @@ def create_user(user: User):
     if users_collection.find_one({"email": user.email}):
         raise HTTPException(status_code=400, detail="Email already exists.")
 
-    # Convert the Pydantic model to a dictionary and insert it
+    # Convert the Pydantic model to a dictionary
     user_dict = user.dict()
+
+    # Insert the user into the MongoDB collection
     result = users_collection.insert_one(user_dict)
 
-    return {"inserted_id": str(result.inserted_id), "user": user_dict}
+    # Add the MongoDB '_id' as a string to the user dictionary
+    user_dict["_id"] = str(result.inserted_id)
 
-@app.get("/list_collections") #
+    return {"inserted_id": user_dict["_id"], "user": user_dict}
+
+@app.get("/get_collections") #
 def list_cols():
     collections = db.list_collection_names()  # List all collections (schemas)
     return {"collections": collections}   
