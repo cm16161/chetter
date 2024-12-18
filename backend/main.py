@@ -27,24 +27,13 @@ class User(BaseModel):
     #profile_picture: str = Field(
     #    None, regex="^(http|https)://.*$"
     #)  # Optional, must be a valid URL
-
-class PydanticObjectId(ObjectId): #  We need to overwrite ObjectID here to get it working with Pydantic
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, v):
-        if not isinstance(v, ObjectId):
-            raise TypeError('ObjectId required')
-        return str(v)
     
 class Cheet(BaseModel):
-    # Omar's code
-    #id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias="_id") # Auto-set new cheet ID
     username: str
     cheet: str
     created_at: datetime = Field(default_factory=datetime.utcnow)  # Auto-set timestamp
+    reply_to: str
+    likes: int = 0
 
 @app.api_route("/create_users_col", methods=["GET", "POST"])
 def create_users_collection():
