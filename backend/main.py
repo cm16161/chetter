@@ -4,6 +4,8 @@ from datetime import datetime
 from pydantic import BaseModel, Field, EmailStr
 from http import HTTPMethod, HTTPStatus
 from bson import ObjectId
+from cheet import create_cheet, get_cheets
+from user import create_user, get_users
 
 app = FastAPI()
 
@@ -57,62 +59,25 @@ def create_cheets_col():
     return {"message": "cheets collection created"}
 
 @app.post("/create_user")
-def create_user(user: User):
-    # Check if the email already exists
-    if users_collection.find_one({"email": user.email}):
-        raise HTTPException(status_code=400, detail="Email already exists.")
-
-    # Convert the Pydantic model to a dictionary
-    user_dict = user.dict()
-
-    # Insert the user into the MongoDB collection
-    result = users_collection.insert_one(user_dict)
-
-    # Add the MongoDB '_id' as a string to the user dictionary
-    user_dict["_id"] = str(result.inserted_id)
-
-    return {"inserted_id": user_dict["_id"], "user": user_dict}
+def create_user_endpoint(user: User):
+    return create_user(user, users_collection)
 
 @app.post("/create_cheet")
-def create_cheet(cheet: Cheet):
-    # Check if the email already exists
-    #if cheets_collection.find_one({"cheet_ID": cheet.username}):
-    #    raise HTTPException(status_code=400, detail="Cheet shouldn't have the same ID as another one.")
+def create_cheet_endpoint(cheet: Cheet):
+    return create_cheet(cheet, cheets_collection)
 
-    # Convert the Pydantic model to a dictionary and insert it
-    cheet_dict = cheet.dict()
-    result = cheets_collection.insert_one(cheet_dict)
-
-    cheet_dict["_id"] = str(result.inserted_id)
-
-    return {"inserted_id": cheet_dict["_id"], "user": cheet_dict}
-
-@app.get("/get_collections") #
+@app.get("/get_collections") # List all collections (schemas)
 def list_cols():
-    collections = db.list_collection_names()  # List all collections (schemas)
+    collections = db.list_collection_names() 
     return {"collections": collections}
 
 @app.get("/get_users")
-def get_users():
-    # Fetch all users from the collection
-    users = list(users_collection.find())
-
-    # Convert ObjectId to string for JSON serialization
-    for user in users:
-        user["_id"] = str(user["_id"])
-
-    return {"users": users}
+def get_users_endpoint():
+    return get_users(users_collection)
 
 @app.get("/get_cheets")
-def get_cheets():
-    # Fetch all users from the collection
-    cheets = list(cheets_collection.find())
-
-    # Convert ObjectId to string for JSON serialization
-    for cheet in cheets:
-        cheet["_id"] = str(cheet["_id"])
-
-    return {"cheet": cheets}
+def get_cheats_endpoint():
+    return get_cheets(cheets_collection)
 
 @app.get("/delete_col")
 def delete_col():
