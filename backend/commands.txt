@@ -15,6 +15,8 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 # --reload is for hot reloading
 
 post user:
-curl -X POST http://localhost:8000/create_user/ \
--H "Content-Type: application/json" \
--d @tamika.json
+curl -X POST http://localhost:8000/create_user/ -H "Content-Type: application/json" -d @tamika.json
+
+post tweet:
+post user:
+curl -X POST http://localhost:8000/create_cheet/ -H "Content-Type: application/json" -d @gigacheet.json

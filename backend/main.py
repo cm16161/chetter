@@ -100,3 +100,15 @@ def get_users():
 def delete_col():
     db.users.drop()
     return {"message": "collection dropped"}
+
+
+@app.get("/get_cheets")
+def get_cheets():
+    # Fetch all users from the collection
+    cheets = list(cheets_collection.find())
+
+    # Convert ObjectId to string for JSON serialization
+    for cheet in cheets:
+        cheet["_id"] = str(cheet["_id"])
+
+    return {"cheet": cheet.cheet}
