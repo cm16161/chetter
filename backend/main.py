@@ -1,11 +1,7 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from pymongo import MongoClient
-from datetime import datetime
-from pydantic import BaseModel, Field, EmailStr
-from http import HTTPMethod, HTTPStatus
-from bson import ObjectId
-from cheet import create_cheet, get_cheets
-from user import create_user, get_users
+from cheet import Cheet, create_cheet, get_cheets
+from user import User, create_user, get_users
 
 app = FastAPI()
 
@@ -14,26 +10,8 @@ app = FastAPI()
 # MongoDB connection
 client = MongoClient("mongodb://localhost:27017")
 db = client.chetter  # Connect to the "chetter" database
-users_collection = db.users  # Use the "users" collection
-cheets_collection = db.cheets # Use the "cheets" collection
-
-# Custom Pydantic model for user information
-class User(BaseModel):
-    username: str
-    email: str  # Automatically validates email format
-    password: str
-    full_name: str
-    created_at: datetime = Field(default_factory=datetime.utcnow)  # Auto-set timestamp
-    #profile_picture: str = Field(
-    #    None, regex="^(http|https)://.*$"
-    #)  # Optional, must be a valid URL
-    
-class Cheet(BaseModel):
-    username: str
-    cheet: str
-    created_at: datetime = Field(default_factory=datetime.utcnow)  # Auto-set timestamp
-    reply_to: str
-    likes: int = 0
+users_collection = db.users  # Load the "users" collection
+cheets_collection = db.cheets # Load the "cheets" collection
 
 @app.api_route("/create_users_col", methods=["GET", "POST"])
 def create_users_collection():

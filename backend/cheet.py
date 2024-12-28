@@ -1,3 +1,13 @@
+from pydantic import BaseModel, Field
+from datetime import datetime
+
+class Cheet(BaseModel):
+    username: str
+    cheet: str
+    created_at: datetime = Field(default_factory=datetime.now)  # Auto-set timestamp
+    reply_to: str
+    likes: int = 0
+
 def create_cheet(cheet, cheets_collection):
     # Check if the email already exists
     #if cheets_collection.find_one({"cheet_ID": cheet.username}):

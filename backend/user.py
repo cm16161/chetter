@@ -1,4 +1,17 @@
 from fastapi import HTTPException
+from datetime import datetime
+from pydantic import BaseModel, Field, EmailStr
+
+# Custom Pydantic model for user information
+class User(BaseModel):
+    username: str
+    email: EmailStr  # Automatically validates email format
+    password: str
+    full_name: str
+    created_at: datetime = Field(default_factory=datetime.now)  # Auto-set timestamp
+    #profile_picture: str = Field(
+    #    None, regex="^(http|https)://.*$"
+    #)  # Optional, must be a valid URL
 
 def create_user(user, users_collection):
     # Check if the email already exists
