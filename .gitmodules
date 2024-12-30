@@ -1,0 +1,3 @@
+[submodule "backend/llama_server"]
+	path = backend/llama_server
+	url = https://github.com/IshanG97/llama_server.git
