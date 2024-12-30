@@ -17,11 +17,12 @@ macOS:
 
 start backend server:
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-# main is the main.py file
-# app is the app=FastApi() bit
-# --host 0.0.0.0 makes the server available to all devices on the network
-# --port 8000 is the exposed port on the service the files are served on
-# --reload is for hot reloading
+
+main is the main.py file
+app is the app=FastApi() bit
+--host 0.0.0.0 makes the server available to all devices on the network
+--port 8000 is the exposed port on the service the files are served on
+--reload is for hot reloading
 
 post user:
 curl -X POST http://localhost:8000/create_user/ -H "Content-Type: application/json" -d @tamika.json
