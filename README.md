@@ -1,5 +1,7 @@
 # chetter
 
+Quick setup: `pip install -r requirements.txt`
+
 Llama server submodule:
     
 - To add: `git submodule add https://github.com/IshanG97/llama_server.git llama_server`
